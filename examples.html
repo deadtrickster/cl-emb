@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <link href="examples.css" rel="stylesheet" type="text/css" />
+    <title>CL-EMB: Examples</title>
+  </head>
+  <body>
+    <h1>Some examples of <a href="http://common-lisp.net/project/cl-emb/">CL-EMB</a> usage</h1>
+    <ol>
+      <li><a href="#combine-cl-who">Combining CL-EMB with CL-WHO</a></li>
+      <li><a href="#simple-loop">A simple loop</a></li>
+      <li><a href="#build-dropdown">Build a dropdown</a></li>
+      <li><a href="#mark-fields">Mark invalid form fields</a></li>
+      <li><a href="#using-generic-templates">Using generic templates</a></li>
+    </ol>
+    <table border="1" cellpadding="2" id="combine-cl-who">
+      <caption>Combining CL-EMB with CL-WHO</caption>
+      <tr>
+        <th>
+          Description
+        </th>
+        <td>
+          You can mix several methods of HTML generating together. Think of <a href="http://www.cliki.net/Lisp%20Markup%20Languages">Lisp Markup Languages</a> like <a href="http://weitz.de/cl-who/">CL-WHO</a>. <small>(Example code from the <a href="http://weitz.de/cl-who/">CL-WHO</a> documentation.)</small>
+        </td>
+      </tr>
+      <tr>
+        <th>
+          ENV
+        </th>
+        <td>
+          <code>NIL</code>
+        </td>
+      </tr>
+      <tr>
+        <th>
+          Dependencies
+        </th>
+        <td>
+          <a href="http://weitz.de/cl-who/">CL-WHO</a>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <pre>&lt;h1&gt;Music links&lt;/h1&gt;
+&lt;%
+(cl-who:with-html-output (*standard-output*)
+  (loop for (link . title) in 
+        '((&quot;http://zappa.com/&quot; . &quot;Frank Zappa&quot;)
+          (&quot;http://marcusmiller.com/&quot; . &quot;Marcus Miller&quot;)
+          (&quot;http://www.milesdavis.com/&quot; . &quot;Miles Davis&quot;))
+        do (cl-who:htm (:a :href link
+                           (:b (cl-who:str title)))
+                       :br)))
+%&gt;</pre>
+        </td>
+      </tr>
+    </table>
+
+    <table border="1" cellpadding="2" id="simple-loop">
+      <caption>A simple loop</caption>
+      <tr>
+        <th>
+          Description
+        </th>
+        <td>
+          The "Music links" example with template tags and a loop. This example isn't meant to prove anything! Use the method which fits your problem!<br/>
+          The output of the title gets escaped by CL-EMB ("-escape html"). Depending on the situation you'd rather escape the output yourself and don't want to use any complicated modifiers in the template code itself.
+        </td>
+      </tr>
+      <tr>
+        <th>
+          ENV
+        </th>
+        <td>
+<pre>'(:music-list
+  ((:link "http://zappa.com/" :title "Frank Zappa")
+   (:link "http://marcusmiller.com/" :title "Marcus Miller")
+   (:link "http://www.milesdavis.com/" :title "Miles Davis")))</pre>
+        </td>
+      </tr>
+      <tr>
+        <th>
+          Dependencies
+        </th>
+        <td>
+          -
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <pre>&lt;h1&gt;Music links&lt;/h1&gt;
+&lt;% @loop music-list %&gt;
+&lt;a href=&quot;&lt;% @var link %&gt;&quot;&gt;&lt;b&gt;&lt;% @var title -escape html%&gt;&lt;/b&gt;&lt;/a&gt;&lt;br /&gt;
+&lt;% @endloop %&gt;</pre>
+        </td>
+      </tr>
+    </table>
+
+    <table border="1" cellpadding="2" id="build-dropdown">
+      <caption>Build a dropdown</caption>
+      <tr>
+        <th>
+          Description
+        </th>
+        <td>
+          You can mix template style with embedded Common Lisp style. This example shows how to access the plist ENV. Within the loop (<code >@loop</code>) ENV gets bound to every plist in the list.<br/>
+          <a href="http://weitz.de/tbnl/">TBNL</a> is used to access a submitted parameter "product" and compare it to the current value attribute of the option element.<br/>
+          Remember the escaping! Set <code>cl-emb:*escape-type*</code> to <code>:html</code> and all output of <code>@var</code> will be escaped correctly.
+        </td>
+      </tr>
+      <tr>
+        <th>
+          ENV
+        </th>
+        <td>
+<pre>'(:products
+  ((:value "foo1" :text "Super Foo")
+   (:value "fooxl" :text "Super Foo XL")
+   (:value "bar2000" :text "Ultra Bar 2000")
+   (:value "hl2" :text "Half-Life 2")
+   (:value "dn4e4" :text "Vaporware")))</pre>
+        </td>
+      </tr>
+      <tr>
+        <th>
+          Dependencies
+        </th>
+        <td>
+          <a href="http://weitz.de/tbnl/">TBNL</a>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <pre>&lt;select name=&quot;product&quot;&gt;
+  &lt;% @loop products %&gt;
+    &lt;option value=&quot;&lt;% @var value %&gt;&quot;&lt;%
+      (when (equal (getf env :value) (tbnl:parameter &quot;product&quot;)) 
+    %&gt; selected=&quot;selected&quot;&lt;% ) %&gt;&gt;&lt;% @var text %&gt;&lt;/option&gt;
+  &lt;% @endloop %&gt;
+&lt;/select&gt;</pre>
+        </td>
+      </tr>
+    </table>
+
+    <table border="1" cellpadding="2" id="mark-fields">
+      <caption>Mark invalid form fields</caption>
+      <tr>
+        <th>
+          Description
+        </th>
+        <td>
+          Validate a form and mark the errors in the <em>ENV</em> plist.<br />
+          Again: Remember the escaping!
+        </td>
+      </tr>
+      <tr>
+        <th>
+          ENV
+        </th>
+        <td>
+<pre>'(:email "stesch@home" :email-error t)</pre>
+        </td>
+      </tr>
+      <tr>
+        <th>
+          Dependencies
+        </th>
+        <td>
+          -
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <pre>&lt;% @if email-error %&gt;
+  &lt;span class=&quot;error&quot;&gt;Please provide valid e-mail address&lt;/span&gt;&lt;br /&gt;
+&lt;% @endif %&gt;
+&lt;input type=&quot;text&quot; name=&quot;email&quot; value=&quot;&lt;% @var email %&gt;&quot;/&gt;</pre>
+        </td>
+      </tr>
+    </table>
+
+    <table border="1" cellpadding="2" id="using-generic-templates">
+      <caption>Using generic templates</caption>
+      <tr>
+        <th>
+          Description
+        </th>
+        <td>
+          You want to use generic templates which can be called with a defined set of parameters? Then <code>@with</code> and <code>@endwith</code> is what you are looking for. It sets the current <em>ENV</em> to the one accessed by a given name. See the example below, which calls a template for textinput fields.
+        </td>
+      </tr>
+      <tr>
+        <th>
+          ENV
+        </th>
+        <td>
+<pre>'(:name (:name "name"
+         :length 40)
+  :e-mail (:name "email"
+           :value "no@no"
+           :error t
+           :length 120))</pre>
+        </td>
+      </tr>
+      <tr>
+        <th>
+          Dependencies
+        </th>
+        <td>
+          -
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <pre>Please enter your name:&lt;br /&gt;
+&lt;% @with name %&gt;
+  &lt;% @include &quot;includes/textinput.tmpl&quot; %&gt;
+&lt;% @endwith %&gt;
+&lt;br /&gt;
+Please enter your e-mail address:&lt;br /&gt;
+&lt;small&gt;(Use the TLD &lt;em&gt;.invalid&lt;/em&gt;
+if you don't want to receive mail&lt;/small&gt;
+&lt;% @with e-mail %&gt;
+  &lt;% @include &quot;includes/textinput.tmpl&quot; %&gt;
+&lt;% @endwith %&gt;</pre>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

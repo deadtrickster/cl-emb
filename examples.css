@@ -1,0 +1,18 @@
+
+body { font-family: sans-serif; 
+       background-color: #fff;
+       color: #000; }
+
+pre { margin-top: 0; 
+      margin-bottom: 0; }
+
+table { width: 100%; }
+
+th, td { text-align: left;
+         vertical-align: top; }
+
+th { background-color: #eee; }
+
+caption { font-weight: bold; }
+
+table, ol { margin-bottom: 2em; }

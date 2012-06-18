@@ -1,0 +1,10 @@
+CL-EMB is written and Copyright (c) 2004, 2005, 2006 by Stefan Scholl.
+Parts of the source are taken from LSP, written by
+John Wiseman and copyright 2001, 2002 I/NET Inc.
+See lsp-LICENSE.txt
+
+CL-EMB is licensed under the terms of the Lisp Lesser GNU
+Public License (http://opensource.franz.com/preamble.html), known as
+the LLGPL.  The LLGPL consists of a preamble (see above URL) and the
+LGPL.  Where these conflict, the preamble takes precedence. 
+CL-EMB is referenced in the preamble as the "LIBRARY."
