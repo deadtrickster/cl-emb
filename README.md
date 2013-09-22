@@ -1,28 +1,29 @@
-========  --------------------
- CL-EMB   Embedded Common Lisp
-========  --------------------
+
+CL-EMB:   Embedded Common Lisp
+==============================
 
 A mixture of features from eRuby and HTML::Template. You could name
 it "Yet Another LSP" (LispServer Pages) but it's a bit more than that
 and not limited to a certain server or text format.
 
 LICENSE
-=======
+-------
+
 LLGPL
 
 
 INSTALL
-=======
+-------
 
 CL-EMB can be installed with ASDF-INSTALL.
 See http://weitz.de/asdf-install/ for further information.
 
 
 USAGE
-=====
+-----
 
 [generic function]
-EXECUTE-EMB name &key env generator-maker => string
+`EXECUTE-EMB name &key env generator-maker` => `string`
 
   NAME can be a registered (with REGISTER-EMB) emb code or a pathname
   (type PATHNAME) of a file containing the code. Returns a string.
@@ -34,64 +35,64 @@ EXECUTE-EMB name &key env generator-maker => string
 
 
 [generic function]
-REGISTER-EMB name code => emb-function
+`REGISTER-EMB name code` => `emb-function`
 
   Internally registeres given CODE with NAME to be called with
   EXECUTE-EMB. CODE can be a string or a pathname (type PATHNAME) of
   a file containing the code.
 
 [function]
-PPRINT-EMB-FUNCTION name
+`PPRINT-EMB-FUNCTION name`
 
   DEBUG function. Pretty prints function form, if *DEBUG* was T
   when the function was registered.
 
 [function]
-CLEAR-EMB name
+`CLEAR-EMB name`
   Remove named emb code.
 
 [function]
-CLEAR-EMB-ALL
+`CLEAR-EMB-ALL`
   Remove all registered emb code.
 
 [function]
-CLEAR-EMB-ALL-FILES
+`CLEAR-EMB-ALL-FILES`
   Remove all registered file emb code (registered/executed by a pathname).
 
 
 [special variable]
-*EMB-START-MARKER* (default "<%")
+`*EMB-START-MARKER* (default "<%")`
 
   Start of scriptlet or expression. Remember that a following #\=
   indicates an expression.
 
 
 [special variable]
-*EMB-END-MARKER* (default "%>")
+`*EMB-END-MARKER* (default "%>")`
   End of scriptlet or expression.
 
 
 [special variable]
-*ESCAPE-TYPE*
+`*ESCAPE-TYPE*`
 
-  Default value for escaping @var output is :RAW
-  Can be changed to :XML, :HTML, :URI, :URL, :URL-ENCODE
+  Default value for escaping `@var` output is `:RAW`
+  Can be changed to `:XML`, `:HTML`, `:URI`, `:URL`, `:URL-ENCODE`
 
 
 [special variable]
-*FUNCTION-PACKAGE*
+`*FUNCTION-PACKAGE*`
 
   Package the emb function body gets interned to.
-  Default: (find-package :cl-emb-intern)
+  Default: `(find-package :cl-emb-intern)`
 
 
 [special variable]
-*DEBUG*
+`*DEBUG*`
 
-  Debugging mode if T. Default: NIL
+  Debugging mode if `T`. Default: `NIL`
 
 [special variable]
-*LOCKING-FUNCTION*
+`*LOCKING-FUNCTION*`
 
   Function to call to lock access to an internal hash table.
   Must accept a function designator which must be called with
@@ -101,6 +102,7 @@ CLEAR-EMB-ALL-FILES
 
 
   Example:
+```lisp
         (defvar *emb-lock* (kmrcl::make-lock "emb-lock")
           "Lock for CL-EMB.")
 
@@ -110,7 +112,7 @@ CLEAR-EMB-ALL-FILES
             (funcall func)))
 
         (setf emb:*locking-function* 'emb-lock-function)
-
+```
 
 Files get cached and reread when they change.
 
@@ -119,18 +121,19 @@ format) and special tags you know from eRuby or JSP (JavaServer Pages)
 which can hold Common Lisp or CL-EMB's template tags, perhaps
 comparable to JSP's taglib.
 
-<% ... %>   is a scriptlet tag, and wraps
+`<% ... %>`   is a scriptlet tag, and wraps
             Common Lisp code.
 
-<%= ... %>  is an expression tag. Its content gets evaluated and fed as
-            a parameter to (FORMAT T "~A" ...).
+`<%= ... %>`  is an expression tag. Its content gets evaluated and fed as
+            a parameter to `(FORMAT T "~A" ...)`.
 
-<%# ... #%> is a comment. Everything within will be removed/ignored.
+`<%# ... #%>` is a comment. Everything within will be removed/ignored.
             Can't be nested!
 
 Examples:
 ---------
 
+```lisp
 CL-USER> (asdf:oos 'asdf:load-op :cl-emb)
 CL-USER> (cl-emb:register-emb "test1"
                               "10 stars: <% (dotimes (i 10) %>*<% ) %>")
@@ -150,13 +153,13 @@ CL-USER> (let ((emb:*emb-start-marker* "<?emb")
 #<CL-EMB::EMB-FUNCTION {97BEFD9}>
 CL-USER> (emb:execute-emb "marker-test")
 "42 + 42 = 84"
-
+```
 
 Template Tags
 -------------
 
 You can use special template tags instead of Common Lisp code between
-<% and %>. This will be translated to Common Lisp and serves as a
+`<%` and `%>`. This will be translated to Common Lisp and serves as a
 simple shortcut for you.
 
 And more important: It's easier to use for non-programmers. A designer
@@ -165,14 +168,14 @@ can work on HTML code and insert these simple template tags.
 Template tags start with @.
 
 Currently supported:
-@if, @else, @endif, @unless, @endunless, @var, @repeat, @endrepeat,
-@loop, @endloop, @include, @call, @with, @endwith, @set, @genloop,
-@endgenloop, @insert
+`@if`, `@else`, `@endif`, `@unless`, `@endunless`, `@var`, `@repeat`, `@endrepeat`,
+`@loop`, `@endloop`, `@include`, `@call`, `@with`, `@endwith`, `@set`, `@genloop`,
+`@endgenloop`, `@insert`
 
-@if and @unless check if the given parameter is set in the
+`@if` and `@unless` check if the given parameter is set in the
 supplied environment (parameter ENV of EXECUTE-EMB). The
 environment is a plist with keyword + value pairs. Must be terminated
-with @endif or @endunless.
+with `@endif` or `@endunless`.
 
 @var emits the corresponding value from the environment. Uses the
 escape type defined in *ESCAPE-TYPE* (Default :raw, no escaping) or
@@ -231,6 +234,7 @@ Writing "<% @var foo/bar/quux %>" can be translated to
 Examples:
 ---------
 
+```lisp
 CL-USER> (cl-emb:register-emb "test1"
                               "Foo: <% @if foo %>Yes!<% @else %>No!<% @endif %>")
 #<CL-EMB::EMB-FUNCTION {9C0F2D1}>
@@ -326,10 +330,11 @@ CL-USER> (emb:register-emb "test13" "The file:<pre><% @insert textfile %></pre>"
 CL-USER> (emb:execute-emb "test13" :env '(:textfile "/etc/gentoo-release"))
 "The file:<pre>Gentoo Base System version 1.6.14
 </pre>"
-
+```
 
 CREDITS
 =======
+
 Uses code from John Wiseman. See http://lemonodor.com/archives/000128.html
 and lsp-LICENSE.txt
 Thanks to Edi Weitz for letting me use his code for ESCAPE-FOR-XML.
@@ -337,4 +342,5 @@ Thanks to Edi Weitz for letting me use his code for ESCAPE-FOR-XML.
 
 AUTHOR
 ======
+
 Stefan Scholl <stesch@no-spoon.de>
