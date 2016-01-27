@@ -1,6 +1,10 @@
 CL-EMB:   Embedded Common Lisp
 ==============================
 
+**This is a repository based on the old 0.4.4 release, 
+see https://common-lisp.net/project/cl-emb/ for current upstream status**
+
+
 A mixture of features from eRuby and HTML::Template. You could name
 it "Yet Another LSP" (LispServer Pages) but it's a bit more than that
 and not limited to a certain server or text format.
